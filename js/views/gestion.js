@@ -1,5 +1,6 @@
 /**
- * Vues de gestion administrative (Clients, Fournisseurs, Dépenses, Employés).
+ * Vues de gestion administrative (Clients, Fournisseurs, Dépenses, Personnel & Maintenance).
+ * Conforme à la limite stricte de 325 lignes et aux standards UTF-8.
  */
 
 const VUE_GESTION = {
@@ -13,12 +14,10 @@ const VUE_GESTION = {
         </div>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
           <button id="btn-vider-clients" class="btn btn-supprimer btn-sm" style="display: none;" onclick="VUE_GESTION.viderTousLesClients()">
-            <i class="bi bi-trash3-fill"></i>
-            <span>Vider tous les clients</span>
+            <i class="bi bi-trash3-fill"></i> <span>Vider tous les clients</span>
           </button>
           <button class="btn btn-primaire" onclick="VUE_GESTION.ouvrirModaleClient()">
-            <i class="bi bi-person-plus-fill"></i>
-            <span>Ajouter un client</span>
+            <i class="bi bi-person-plus-fill"></i> <span>Ajouter un client</span>
           </button>
         </div>
       </div>
@@ -33,13 +32,10 @@ const VUE_GESTION = {
     const corps = document.getElementById('tableau-clients-corps');
     if (!corps) return;
     const clients = res.donnees || [];
-    
     const btnVider = document.getElementById('btn-vider-clients');
-    if (btnVider && clients.length > 0) {
-      btnVider.style.display = 'inline-flex';
-    }
+    if (btnVider && clients.length > 0) btnVider.style.display = 'inline-flex';
 
-    corps.innerHTML = clients.length === 0 ? `<tr><td colspan="6" style="text-align: center; padding: 2.5rem; color: var(--texte-secondaire);"><i class="bi bi-people" style="font-size: 2rem; display: block; margin-bottom: 0.5rem; opacity: 0.5;"></i>Aucun client enregistré. La liste est neuve et vierge.</td></tr>` : clients.map((c) => `
+    corps.innerHTML = clients.length === 0 ? `<tr><td colspan="6" style="text-align: center; padding: 2.5rem; color: var(--texte-secondaire);"><i class="bi bi-people" style="font-size: 2rem; display: block; margin-bottom: 0.5rem; opacity: 0.5;"></i>Aucun client enregistré. Le registre est neuf et vierge.</td></tr>` : clients.map((c) => `
       <tr>
         <td><strong>${c.prenom || ''} ${c.nom || ''}</strong></td>
         <td>${c.telephone || '—'}</td>
@@ -55,25 +51,17 @@ const VUE_GESTION = {
   },
 
   async supprimerClient(id, nom) {
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer définitivement le client "${nom}" ?`)) return;
-    try {
-      await API.delete(`/clients/${id}`);
-      API.notifier(`Client "${nom}" supprimé avec succès.`, 'succes');
-      APP.naviguerVers('clients');
-    } catch (err) {
-      console.error(err);
-    }
+    if (!confirm(`Supprimer définitivement le client "${nom}" ?`)) return;
+    await API.delete(`/clients/${id}`);
+    API.notifier(`Client supprimé.`, 'succes');
+    APP.naviguerVers('clients');
   },
 
   async viderTousLesClients() {
-    if (!confirm('ATTENTION : Voulez-vous vraiment supprimer TOUS les clients du système ? Le registre sera complètement neuf et vide.')) return;
-    try {
-      await API.delete('/clients/tous/vider');
-      API.notifier('Tous les clients ont été supprimés avec succès.', 'succes');
-      APP.naviguerVers('clients');
-    } catch (err) {
-      console.error(err);
-    }
+    if (!confirm('ATTENTION : Supprimer TOUS les clients du système ?')) return;
+    await API.delete('/clients/tous/vider');
+    API.notifier('Registre des clients réinitialisé à neuf.', 'succes');
+    APP.naviguerVers('clients');
   },
 
   ouvrirModaleClient(id = null) {
@@ -114,17 +102,11 @@ const VUE_GESTION = {
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
         <div>
           <h2 style="font-size: 1.35rem; font-weight: 700;">Gestion des Fournisseurs</h2>
-          <p style="color: var(--texte-secondaire); font-size: 0.875rem;">Partenaires, contacts et approvisionnements</p>
+          <p style="color: var(--texte-secondaire); font-size: 0.875rem;">Partenaires et approvisionnements</p>
         </div>
         <div style="display: flex; gap: 0.5rem;">
-          <button class="btn btn-secondaire" onclick="VUE_GESTION.ouvrirModaleBonCommande()">
-            <i class="bi bi-file-earmark-text"></i>
-            <span>Bon de commande</span>
-          </button>
-          <button class="btn btn-primaire" onclick="VUE_GESTION.ouvrirModaleFournisseur()">
-            <i class="bi bi-truck"></i>
-            <span>Nouveau fournisseur</span>
-          </button>
+          <button class="btn btn-secondaire" onclick="VUE_GESTION.ouvrirModaleBonCommande()"><i class="bi bi-file-earmark-text"></i> <span>Bon de commande</span></button>
+          <button class="btn btn-primaire" onclick="VUE_GESTION.ouvrirModaleFournisseur()"><i class="bi bi-truck"></i> <span>Nouveau fournisseur</span></button>
         </div>
       </div>
       <div class="table-conteneur">
@@ -138,7 +120,7 @@ const VUE_GESTION = {
     const corps = document.getElementById('tableau-fournisseurs-corps');
     if (!corps) return;
     const fournisseurs = res.donnees || [];
-    corps.innerHTML = fournisseurs.length === 0 ? `<tr><td colspan="7" style="text-align: center; padding: 2rem;">Aucun fournisseur enregistré.</td></tr>` : fournisseurs.map((f) => `
+    corps.innerHTML = fournisseurs.length === 0 ? `<tr><td colspan="7" style="text-align: center; padding: 2.5rem; color: var(--texte-secondaire);"><i class="bi bi-truck" style="font-size: 2rem; display: block; margin-bottom: 0.5rem; opacity: 0.5;"></i>Aucun fournisseur enregistré. Répertoire neuf et vierge.</td></tr>` : fournisseurs.map((f) => `
       <tr>
         <td><strong>${f.nomEntreprise}</strong></td>
         <td>${f.nomResponsable || '—'}</td>
@@ -154,30 +136,17 @@ const VUE_GESTION = {
   },
 
   async supprimerFournisseur(id, nom) {
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer le fournisseur "${nom}" ?`)) return;
-    try {
-      await API.delete(`/fournisseurs/${id}`);
-      API.notifier(`Fournisseur "${nom}" supprimé.`, 'succes');
-      APP.naviguerVers('fournisseurs');
-    } catch (err) {
-      console.error(err);
-    }
+    if (!confirm(`Supprimer le fournisseur "${nom}" ?`)) return;
+    await API.delete(`/fournisseurs/${id}`);
+    API.notifier(`Fournisseur supprimé.`, 'succes');
+    APP.naviguerVers('fournisseurs');
   },
 
   async ouvrirModaleBonCommande() {
-    try {
-      const [resFourn, resProd] = await Promise.all([API.get('/fournisseurs'), API.get('/produits')]);
-      const fournisseurs = resFourn.donnees || [];
-      const produits = resProd.donnees || [];
-      if (fournisseurs.length === 0) {
-        API.notifier('Aucun fournisseur disponible. Veuillez en créer un.', 'alerte');
-        return;
-      }
-      PURCHASE_ORDER_UTIL.ouvrirModale(fournisseurs, produits);
-    } catch (err) {
-      console.error(err);
-      API.notifier('Erreur chargement bon de commande.', 'erreur');
-    }
+    const [resFourn, resProd] = await Promise.all([API.get('/fournisseurs'), API.get('/produits')]);
+    const fournisseurs = resFourn.donnees || [];
+    if (fournisseurs.length === 0) return API.notifier('Aucun fournisseur disponible. Veuillez en créer un.', 'alerte');
+    PURCHASE_ORDER_UTIL.ouvrirModale(fournisseurs, resProd.donnees || []);
   },
 
   ouvrirModaleFournisseur() {
@@ -232,7 +201,7 @@ const VUE_GESTION = {
     const corps = document.getElementById('tableau-depenses-corps');
     if (!corps) return;
     const depenses = res.donnees || [];
-    corps.innerHTML = depenses.length === 0 ? `<tr><td colspan="7" style="text-align: center; padding: 2rem;">Aucune dépense enregistrée.</td></tr>` : depenses.map((d) => `
+    corps.innerHTML = depenses.length === 0 ? `<tr><td colspan="7" style="text-align: center; padding: 2.5rem; color: var(--texte-secondaire);"><i class="bi bi-cash-stack" style="font-size: 2rem; display: block; margin-bottom: 0.5rem; opacity: 0.5;"></i>Aucune dépense enregistrée. Registre neuf.</td></tr>` : depenses.map((d) => `
       <tr>
         <td style="font-size: 0.8125rem;">${formaterDate(d.dateDepense)}</td>
         <td><span class="badge badge-info">${d.categorie}</span></td>
@@ -248,14 +217,10 @@ const VUE_GESTION = {
   },
 
   async supprimerDepense(id, titre) {
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer la dépense "${titre}" ?`)) return;
-    try {
-      await API.delete(`/depenses/${id}`);
-      API.notifier(`Dépense supprimée.`, 'succes');
-      APP.naviguerVers('depenses');
-    } catch (err) {
-      console.error(err);
-    }
+    if (!confirm(`Supprimer la dépense "${titre}" ?`)) return;
+    await API.delete(`/depenses/${id}`);
+    API.notifier(`Dépense supprimée.`, 'succes');
+    APP.naviguerVers('depenses');
   },
 
   ouvrirModaleDepense() {
@@ -289,15 +254,16 @@ const VUE_GESTION = {
     });
   },
 
-  // 4. EMPLOYÉS
+  // 4. PERSONNEL & MAINTENANCE
   async rendreEmployes(conteneur) {
     conteneur.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
         <div>
-          <h2 style="font-size: 1.35rem; font-weight: 700;">Gestion du Personnel & Administration</h2>
-          <p style="color: var(--texte-secondaire); font-size: 0.875rem;">Administrateur, Gérants, Caissiers, Stocks et Sauvegardes</p>
+          <h2 style="font-size: 1.35rem; font-weight: 700;">Personnel & Administration</h2>
+          <p style="color: var(--texte-secondaire); font-size: 0.875rem;">Comptes d'accès, sauvegarde et maintenance</p>
         </div>
-        <div style="display: flex; gap: 0.5rem;">
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button class="btn btn-supprimer btn-sm" onclick="VUE_GESTION.reinitialiserPlateformeComplet()"><i class="bi bi-arrow-counterclockwise"></i> <span>Remise à neuf</span></button>
           <button class="btn btn-annuler btn-sm" onclick="VUE_GESTION.telechargerBackupBDD()"><i class="bi bi-cloud-arrow-down-fill"></i> <span>Sauvegarde BDD</span></button>
           <button class="btn btn-primaire btn-sm" onclick="VUE_GESTION.ouvrirModaleEmploye()"><i class="bi bi-person-plus-fill"></i> <span>Créer un compte</span></button>
         </div>
@@ -334,14 +300,10 @@ const VUE_GESTION = {
   },
 
   async supprimerEmploye(id, nom) {
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer définitivement le compte de "${nom}" ?`)) return;
-    try {
-      await API.delete(`/utilisateurs/${id}`);
-      API.notifier(`Compte de "${nom}" supprimé avec succès.`, 'succes');
-      APP.naviguerVers('employes');
-    } catch (err) {
-      console.error(err);
-    }
+    if (!confirm(`Supprimer définitivement le compte de "${nom}" ?`)) return;
+    await API.delete(`/utilisateurs/${id}`);
+    API.notifier(`Compte supprimé avec succès.`, 'succes');
+    APP.naviguerVers('employes');
   },
 
   ouvrirModaleEmploye() {
@@ -380,19 +342,27 @@ const VUE_GESTION = {
   },
 
   async telechargerBackupBDD() {
+    API.notifier('Génération de la sauvegarde...', 'succes');
+    const donnees = await API.get('/backup/export');
+    const blob = new Blob([JSON.stringify(donnees, null, 2)], { type: 'application/json' });
+    const lien = document.createElement('a');
+    lien.href = URL.createObjectURL(blob);
+    lien.download = `backup_supermarche_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(lien);
+    lien.click();
+    document.body.removeChild(lien);
+  },
+
+  async reinitialiserPlateformeComplet() {
+    if (!confirm('ATTENTION : Voulez-vous RÉINITIALISER TOTALEMENT la plateforme à neuf ? Toutes les ventes, stocks, produits, catégories, clients et dépenses seront purgés.')) return;
     try {
-      API.notifier('Génération de la sauvegarde BDD...', 'succes');
-      const donnees = await API.get('/backup/export');
-      const blob = new Blob([JSON.stringify(donnees, null, 2)], { type: 'application/json' });
-      const lien = document.createElement('a');
-      lien.href = URL.createObjectURL(blob);
-      lien.download = `backup_supermarche_${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(lien);
-      lien.click();
-      document.body.removeChild(lien);
-      API.notifier('Sauvegarde téléchargée avec succès.', 'succes');
+      const res = await API.post('/backup/reinitialiser-a-neuf', {});
+      if (res.succes) {
+        API.notifier('Plateforme réinitialisée à neuf avec succès !', 'succes');
+        APP.naviguerVers('dashboard');
+      }
     } catch (err) {
-      console.error('Erreur backup:', err);
+      console.error(err);
     }
   }
 };

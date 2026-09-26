@@ -1,19 +1,18 @@
 /**
  * Vue Caisse & Point de Vente (POS) avec gestion des sessions, clôture Z et scanner webcam.
+ * Conforme à la limite stricte de 325 lignes et aux standards UTF-8.
  */
 
 const VUE_CAISSE = {
   panier: [],
   produitsCatalogue: [],
   clients: [],
-  sessionActive: null,
   modePaiementChoisi: 'Espèces',
 
   async rendre(conteneur) {
     this.panier = [];
     conteneur.innerHTML = `
       <div class="pos-grille">
-        <!-- Catalogue & Recherche -->
         <div class="pos-catalogue">
           <div class="carte" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 200px;">
@@ -29,7 +28,6 @@ const VUE_CAISSE = {
             </div>
           </div>
         </div>
-        <!-- Panier & Encaissement -->
         <div class="pos-panier">
           <div style="padding: 0.875rem 1.25rem; border-bottom: var(--bordure-discrete); display: flex; justify-content: space-between; align-items: center;">
             <h3 style="font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem;"><i class="bi bi-cart3" style="color: var(--couleur-principale);"></i> <span>Ticket Caisse</span></h3>
@@ -42,9 +40,7 @@ const VUE_CAISSE = {
             <div style="text-align: center; color: var(--texte-secondaire); padding: 2.5rem 1rem;">
               <i class="bi bi-basket" style="font-size: 2.5rem; opacity: 0.3;"></i>
               <p style="margin-top: 0.5rem; font-size: 0.875rem; font-weight: 600;">Le ticket est vide</p>
-              <p style="font-size: 0.75rem; color: var(--texte-secondaire); margin-top: 0.25rem;">
-                👈 Cliquez sur un produit à gauche pour l'ajouter au panier.
-              </p>
+              <p style="font-size: 0.75rem; color: var(--texte-secondaire); margin-top: 0.25rem;">👈 Cliquez sur un produit à gauche pour l'ajouter au panier.</p>
             </div>
           </div>
           <div class="panier-totaux">
@@ -66,7 +62,6 @@ const VUE_CAISSE = {
                 <div id="pos-monnaie-rendue" style="font-family: var(--police-titres); font-weight: 700; font-size: 1.05rem; color: var(--couleur-succes);">0 FCFA</div>
               </div>
             </div>
-            <!-- Coupures et raccourcis espèces -->
             <div style="display: flex; gap: 0.25rem; margin-top: 0.25rem; flex-wrap: wrap;">
               <button type="button" class="btn btn-sm btn-annuler" style="font-size: 0.7rem; padding: 2px 6px;" onclick="VUE_CAISSE.reglerMontantExact()">Montant Exact</button>
               <button type="button" class="btn btn-sm btn-annuler" style="font-size: 0.7rem; padding: 2px 6px;" onclick="VUE_CAISSE.ajouterCoupure(1000)">+1 000</button>
@@ -150,7 +145,7 @@ const VUE_CAISSE = {
     const filtre = this.produitsCatalogue.filter((p) => p.nom.toLowerCase().includes(t) || (p.codeBarres && p.codeBarres.includes(t)));
 
     if (filtre.length === 0) {
-      grille.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--texte-secondaire); padding: 2rem;">Aucun produit trouvé.</div>`;
+      grille.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--texte-secondaire); padding: 2rem;">Aucun produit dans le catalogue.</div>`;
       return;
     }
 
@@ -243,13 +238,10 @@ const VUE_CAISSE = {
     }
 
     const valeurSaisie = montantRecuInput?.value.trim() || '';
-    const montantRecu = valeurSaisie !== '' && !isNaN(valeurSaisie) ? Number(valeurSaisie) : (totalNet > 0 ? totalNet : 0);
     const monnaie = Math.max(0, (valeurSaisie !== '' ? Number(valeurSaisie) : totalNet) - totalNet);
-
     document.getElementById('pos-monnaie-rendue').textContent = formaterMontant(valeurSaisie !== '' ? monnaie : 0);
 
     if (btnValider) {
-      // Actif dès qu'il y a des articles et que le montant versé n'est pas inférieur au total
       const estMontantSuffisant = valeurSaisie === '' || Number(valeurSaisie) >= totalNet;
       btnValider.disabled = !(this.panier.length > 0 && totalNet >= 0 && estMontantSuffisant);
     }
@@ -260,25 +252,16 @@ const VUE_CAISSE = {
     const remise = Number(document.getElementById('pos-remise-input')?.value) || 0;
     const totalNet = Math.max(0, sousTotal - remise);
     const input = document.getElementById('pos-montant-recu');
-    if (input) {
-      input.value = totalNet > 0 ? totalNet : '';
-      this.calculerTotaux();
-    }
+    if (input) { input.value = totalNet > 0 ? totalNet : ''; this.calculerTotaux(); }
   },
 
   ajouterCoupure(montant) {
     const input = document.getElementById('pos-montant-recu');
-    if (input) {
-      const actuel = Number(input.value) || 0;
-      input.value = actuel + montant;
-      this.calculerTotaux();
-    }
+    if (input) { input.value = (Number(input.value) || 0) + montant; this.calculerTotaux(); }
   },
 
   async finaliserVente() {
-    if (this.panier.length === 0) {
-      return API.notifier('Veuillez ajouter au moins un produit au ticket.', 'alerte');
-    }
+    if (this.panier.length === 0) return API.notifier('Veuillez ajouter au moins un produit au ticket.', 'alerte');
 
     const sousTotal = this.panier.reduce((sum, i) => sum + i.sousTotal, 0);
     const remise = Number(document.getElementById('pos-remise-input')?.value) || 0;
@@ -287,33 +270,26 @@ const VUE_CAISSE = {
     const valeurSaisie = montantRecuInput?.value.trim() || '';
     const montantPaye = (valeurSaisie !== '' && !isNaN(valeurSaisie)) ? Number(valeurSaisie) : totalNet;
 
-    if (montantPaye < totalNet) {
-      return API.notifier(`Montant versé insuffisant (${formaterMontant(montantPaye)} reçu pour ${formaterMontant(totalNet)} dû).`, 'alerte');
-    }
+    if (montantPaye < totalNet) return API.notifier(`Montant versé insuffisant.`, 'alerte');
 
     const clientId = document.getElementById('pos-client-select')?.value || null;
-
-    try {
-      const payload = {
-        articles: this.panier.map((i) => ({ produitId: i.produitId, quantite: i.quantite })),
-        modePaiement: this.modePaiementChoisi,
-        montantPaye,
-        remise,
-        clientId
-      };
-      const reponse = await API.post('/ventes', payload);
-      if (reponse.succes) {
-        API.notifier(`Vente #${reponse.donnees.numeroTicket} validée avec succès !`, 'succes');
-        TICKET_UTIL.imprimer(reponse.donnees);
-        this.panier = [];
-        if (montantRecuInput) montantRecuInput.value = '';
-        const remiseInput = document.getElementById('pos-remise-input');
-        if (remiseInput) remiseInput.value = '0';
-        this.mettreAJourAffichagePanier();
-        await this.chargerDonnees();
-      }
-    } catch (err) {
-      console.error('Erreur vente:', err);
+    const payload = {
+      articles: this.panier.map((i) => ({ produitId: i.produitId, quantite: i.quantite })),
+      modePaiement: this.modePaiementChoisi,
+      montantPaye,
+      remise,
+      clientId
+    };
+    const reponse = await API.post('/ventes', payload);
+    if (reponse.succes) {
+      API.notifier(`Vente #${reponse.donnees.numeroTicket} validée avec succès !`, 'succes');
+      TICKET_UTIL.imprimer(reponse.donnees);
+      this.panier = [];
+      if (montantRecuInput) montantRecuInput.value = '';
+      const remiseInput = document.getElementById('pos-remise-input');
+      if (remiseInput) remiseInput.value = '0';
+      this.mettreAJourAffichagePanier();
+      await this.chargerDonnees();
     }
   },
 
@@ -324,14 +300,7 @@ const VUE_CAISSE = {
     if (!active) {
       APP.ouvrirModale({
         titre: 'Ouverture Session Caisse',
-        contenu: `
-          <form id="form-ouvrir-session" onsubmit="return false;">
-            <div class="champ-groupe">
-              <label class="champ-label">Fond de caisse initial (Espèces) *</label>
-              <input type="number" id="session-fond-initial" class="champ-input" value="50000" min="0" required />
-            </div>
-          </form>
-        `,
+        contenu: `<form id="form-ouvrir-session" onsubmit="return false;"><div class="champ-groupe"><label class="champ-label">Fond de caisse initial (Espèces) *</label><input type="number" id="session-fond-initial" class="champ-input" value="50000" min="0" required /></div></form>`,
         texteBoutonValider: 'Ouvrir session',
         actionValidation: async () => {
           const fondDeCaisseInitial = document.getElementById('session-fond-initial').value;
@@ -352,10 +321,7 @@ const VUE_CAISSE = {
               <span>Espèces attendues :</span><strong style="color: var(--couleur-principale);">${formaterMontant(b.especesTheoriquesEnCaisse)}</strong>
             </div>
           </div>
-          <div class="champ-groupe">
-            <label class="champ-label">Espèces physiques comptées *</label>
-            <input type="number" id="cloture-especes-comptees" class="champ-input" placeholder="Montant compté..." required />
-          </div>
+          <div class="champ-groupe"><label class="champ-label">Espèces physiques comptées *</label><input type="number" id="cloture-especes-comptees" class="champ-input" placeholder="Montant compté..." required /></div>
         `,
         texteBoutonValider: 'Valider Clôture Z',
         actionValidation: async () => {
