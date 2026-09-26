@@ -1,0 +1,289 @@
+/**
+ * Composants d'interface (Boutons, Badges, Modales, Formulaires, Cartes).
+ * Conforme aux exigences : Zéro couleur hardcodée, variables uniquement.
+ */
+
+/* 1. Boutons conformes à la charte */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-family: var(--police-texte);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--rayon-sm);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-rapide);
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primaire {
+  background-color: var(--couleur-principale);
+  color: var(--cartes-fond);
+}
+.btn-primaire:hover:not(:disabled) {
+  background-color: var(--couleur-principale-survol);
+}
+
+.btn-modifier {
+  background-color: var(--couleur-alerte);
+  color: var(--cartes-fond);
+}
+.btn-modifier:hover:not(:disabled) {
+  background-color: var(--couleur-alerte-survol);
+}
+
+.btn-supprimer {
+  background-color: var(--couleur-erreur);
+  color: var(--cartes-fond);
+}
+.btn-supprimer:hover:not(:disabled) {
+  background-color: var(--couleur-erreur-survol);
+}
+
+.btn-valider {
+  background-color: var(--couleur-succes);
+  color: var(--cartes-fond);
+}
+.btn-valider:hover:not(:disabled) {
+  background-color: var(--couleur-succes-survol);
+}
+
+.btn-annuler {
+  background-color: var(--couleur-neutre);
+  color: var(--cartes-fond);
+}
+.btn-annuler:hover:not(:disabled) {
+  background-color: var(--couleur-neutre-survol);
+}
+
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+/* 2. Cartes et panneaux */
+.carte {
+  background-color: var(--cartes-fond);
+  border-radius: var(--rayon-md);
+  border: var(--bordure-discrete);
+  box-shadow: var(--ombre-carte);
+  padding: 1.25rem;
+}
+
+.carte-kpi {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-left: 4px solid var(--couleur-principale);
+}
+
+.carte-kpi.succes { border-left-color: var(--couleur-succes); }
+.carte-kpi.alerte { border-left-color: var(--couleur-alerte); }
+.carte-kpi.erreur { border-left-color: var(--couleur-erreur); }
+
+.kpi-titre {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--texte-secondaire);
+}
+
+.kpi-valeur {
+  font-family: var(--police-titres);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--texte-principal);
+  margin: 0.5rem 0;
+}
+
+/* 3. Badges de statut */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--rayon-plein);
+}
+
+.badge-normal {
+  background-color: rgba(22, 163, 74, 0.12);
+  color: var(--couleur-succes);
+}
+.badge-faible {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: var(--couleur-alerte);
+}
+.badge-rupture, .badge-perime {
+  background-color: rgba(220, 38, 38, 0.12);
+  color: var(--couleur-erreur);
+}
+.badge-info {
+  background-color: rgba(37, 99, 235, 0.12);
+  color: var(--couleur-principale);
+}
+
+/* 4. Formulaires */
+.champ-groupe {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+.champ-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--texte-principal);
+}
+
+.champ-input, .champ-select, .champ-textarea {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  font-family: var(--police-texte);
+  font-size: 0.875rem;
+  color: var(--texte-principal);
+  background-color: var(--cartes-fond);
+  border: var(--bordure-discrete);
+  border-radius: var(--rayon-sm);
+  outline: none;
+  transition: var(--transition-rapide);
+}
+
+.champ-input:focus, .champ-select:focus, .champ-textarea:focus {
+  border-color: var(--couleur-principale);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* 5. Tableaux interactifs */
+.table-conteneur {
+  overflow-x: auto;
+  background-color: var(--cartes-fond);
+  border-radius: var(--rayon-md);
+  border: var(--bordure-discrete);
+}
+
+.table-gestion {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.table-gestion th {
+  background-color: var(--fond-general);
+  color: var(--texte-secondaire);
+  font-weight: 600;
+  padding: 0.875rem 1rem;
+  border-bottom: var(--bordure-discrete);
+  white-space: nowrap;
+}
+
+.table-gestion td {
+  padding: 0.875rem 1rem;
+  border-bottom: var(--bordure-discrete);
+  color: var(--texte-principal);
+  vertical-align: middle;
+}
+
+.table-gestion tbody tr:hover {
+  background-color: rgba(37, 99, 235, 0.03);
+}
+
+/* 6. Modales */
+.modale-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: var(--transition-normale);
+  padding: 1rem;
+}
+
+.modale-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modale-boite {
+  background-color: var(--cartes-fond);
+  border-radius: var(--rayon-lg);
+  box-shadow: var(--ombre-modale);
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.modale-entete {
+  padding: 1.25rem 1.5rem;
+  border-bottom: var(--bordure-discrete);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modale-corps {
+  padding: 1.5rem;
+}
+
+.modale-pied {
+  padding: 1rem 1.5rem;
+  border-top: var(--bordure-discrete);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* 7. Notifications Toast */
+#toast-conteneur {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  border-radius: var(--rayon-md);
+  background-color: var(--barre-laterale);
+  color: var(--cartes-fond);
+  box-shadow: var(--ombre-modale);
+  font-size: 0.875rem;
+  min-width: 280px;
+  animation: glisserGauche 0.3s ease-out;
+}
+
+.toast.succes { border-left: 4px solid var(--couleur-succes); }
+.toast.erreur { border-left: 4px solid var(--couleur-erreur); }
+.toast.alerte { border-left: 4px solid var(--couleur-alerte); }
+
+@keyframes glisserGauche {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}

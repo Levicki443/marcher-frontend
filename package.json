@@ -1,0 +1,17 @@
+{
+  "name": "marcher-frontend",
+  "version": "1.0.0",
+  "description": "Interface web de gestion de supermarché et point de vente",
+  "scripts": {
+    "dev": "npx -y serve . -p 3000",
+    "start": "npx -y serve . -p 3000"
+  },
+  "keywords": [
+    "supermarché",
+    "frontend",
+    "point-de-vente",
+    "caisse"
+  ],
+  "author": "",
+  "license": "ISC"
+}

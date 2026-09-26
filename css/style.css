@@ -1,0 +1,359 @@
+/**
+ * Mise en page principale (Layout, Barre latérale, En-tête, Point de Vente).
+ */
+
+@import url('./variables.css');
+@import url('./components.css');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--police-texte);
+  background-color: var(--fond-general);
+  color: var(--texte-principal);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--police-titres);
+  color: var(--texte-principal);
+  font-weight: 600;
+}
+
+/* 1. Écran de Connexion (Login) */
+.page-connexion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--barre-laterale) 0%, #1E293B 100%);
+  padding: 1.5rem;
+}
+
+.carte-connexion {
+  background-color: var(--cartes-fond);
+  border-radius: var(--rayon-lg);
+  box-shadow: var(--ombre-modale);
+  width: 100%;
+  max-width: 440px;
+  padding: 2.5rem;
+}
+
+.connexion-logo {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.connexion-logo h1 {
+  font-size: 1.5rem;
+  color: var(--couleur-principale);
+}
+
+.connexion-logo p {
+  font-size: 0.875rem;
+  color: var(--texte-secondaire);
+  margin-top: 0.25rem;
+}
+
+/* 2. Structure Principale de l'Application */
+.app-conteneur {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Barre latérale (Sidebar) */
+.barre-laterale {
+  width: 260px;
+  background-color: var(--barre-laterale);
+  color: #E2E8F0;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  transition: var(--transition-normale);
+  z-index: 100;
+}
+
+.barre-laterale-entete {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.app-titre {
+  font-family: var(--police-titres);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--cartes-fond);
+}
+
+.barre-laterale-menu {
+  flex: 1;
+  padding: 1rem 0.75rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nav-lien {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.75rem 1rem;
+  color: #94A3B8;
+  text-decoration: none;
+  border-radius: var(--rayon-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: var(--transition-rapide);
+  cursor: pointer;
+}
+
+.nav-lien:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: var(--cartes-fond);
+}
+
+.nav-lien.actif {
+  background-color: var(--couleur-principale);
+  color: var(--cartes-fond);
+  font-weight: 600;
+}
+
+.nav-icone {
+  font-size: 1.125rem;
+  width: 1.25rem;
+  text-align: center;
+}
+
+.barre-laterale-pied {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Zone de contenu principale */
+.conteneur-principal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--fond-general);
+}
+
+/* Barre supérieure (Topbar) */
+.barre-superieure {
+  height: 64px;
+  background-color: var(--cartes-fond);
+  border-bottom: var(--bordure-discrete);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  flex-shrink: 0;
+}
+
+.titre-page-actuelle {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.utilisateur-profil {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profil-badge {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.profil-nom {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--texte-principal);
+}
+
+.profil-role {
+  font-size: 0.75rem;
+  color: var(--couleur-principale);
+  font-weight: 500;
+}
+
+/* Zone de défilement des vues */
+.vue-conteneur {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+/* 3. Vue Caisse & Point de Vente (POS) */
+.pos-grille {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 1.25rem;
+  height: 100%;
+}
+
+.pos-catalogue {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pos-panier {
+  background-color: var(--cartes-fond);
+  border-radius: var(--rayon-md);
+  border: var(--bordure-discrete);
+  box-shadow: var(--ombre-carte);
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 130px);
+}
+
+.panier-articles {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.panier-article-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background-color: var(--fond-general);
+  border-radius: var(--rayon-sm);
+}
+
+.panier-totaux {
+  padding: 1.25rem;
+  border-top: var(--bordure-discrete);
+  background-color: var(--fond-general);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.total-ligne {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--texte-secondaire);
+}
+
+.total-ligne.grand-total {
+  font-family: var(--police-titres);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--texte-principal);
+  border-top: var(--bordure-discrete);
+  padding-top: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+/* Impression avancée (Tickets thermiques 80mm & Documents A4) */
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    font-size: 12px;
+  }
+
+  /* Éléments d'interface masqués à l'impression */
+  .barre-laterale,
+  .barre-superieure,
+  #toast-conteneur,
+  .btn,
+  .modale-entete button,
+  .modale-pied,
+  .pos-catalogue,
+  .pos-panier,
+  #btn-trigger-spotlight {
+    display: none !important;
+  }
+
+  /* 1. Ticket Thermique 80mm */
+  #zone-ticket-imprimable {
+    display: block !important;
+    position: static !important;
+    width: 80mm !important;
+    margin: 0 auto !important;
+    padding: 6px !important;
+  }
+
+  /* 2. Documents dans Modale (Factures A4, Bons de commande, Étiquettes) */
+  .modale-overlay, .modale-overlay.active {
+    position: static !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    padding: 0 !important;
+  }
+
+  .modale-boite {
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: transparent !important;
+  }
+
+  .modale-corps {
+    padding: 0 !important;
+  }
+
+  .modale-entete {
+    display: none !important;
+  }
+
+  /* 3. Rapport d'activité */
+  #zone-contenu-rapport {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+}
+
+/* Grille de cartes de KPIs */
+.grille-kpi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .pos-grille {
+    grid-template-columns: 1fr;
+  }
+  .pos-panier {
+    height: auto;
+  }
+  .barre-laterale {
+    width: 70px;
+  }
+  .nav-texte, .app-titre {
+    display: none;
+  }
+}

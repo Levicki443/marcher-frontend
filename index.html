@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Système de Gestion de Supermarché — Point de Vente & Stock</title>
+  <meta name="description"
+    content="Application professionnelle et moderne de gestion complète de supermarché : Caisse, Stocks, Produits, Clients, Fournisseurs et Statistiques." />
+
+  <!-- Feuilles de style conformes à la charte -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Icônes Bootstrap Icons pour une cohérence graphique maximale -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+</head>
+
+<body>
+
+  <!-- Conteneur des notifications Toast -->
+  <div id="toast-conteneur" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- 1. Écran d'Authentification (Affiché si non connecté) -->
+  <div id="ecran-connexion" class="page-connexion" style="display: none;">
+    <div class="carte-connexion">
+      <div class="connexion-logo">
+        <div style="font-size: 2.5rem; color: var(--couleur-principale); margin-bottom: 0.5rem;">
+          <i class="bi bi-shop"></i>
+        </div>
+        <h1>SUPERMARCHÉ PRO</h1>
+        <p>Connectez-vous pour accéder à votre espace de travail</p>
+      </div>
+
+      <!-- Onglets Connexion / Inscription -->
+      <div
+        style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; background: var(--arriere-plan); padding: 4px; border-radius: var(--rayon-arrondi-md);">
+        <button type="button" id="onglet-connexion" class="btn btn-primaire btn-sm"
+          style="flex: 1; border-radius: var(--rayon-arrondi-sm);">
+          <i class="bi bi-box-arrow-in-right"></i>
+          <span>Connexion</span>
+        </button>
+        <button type="button" id="onglet-inscription" class="btn btn-annuler btn-sm"
+          style="flex: 1; border-radius: var(--rayon-arrondi-sm);">
+          <i class="bi bi-person-plus"></i>
+          <span>Inscription</span>
+        </button>
+      </div>
+
+      <!-- Formulaire de Connexion -->
+      <form id="formulaire-connexion" onsubmit="return false;">
+        <div class="champ-groupe">
+          <label for="input-email" class="champ-label">Adresse email professionnelle</label>
+          <input type="email" id="input-email" class="champ-input" placeholder="ex: admin@supermarche.local" required
+            autocomplete="username" />
+        </div>
+
+        <div class="champ-groupe">
+          <label for="input-motdepasse" class="champ-label">Mot de passe</label>
+          <input type="password" id="input-motdepasse" class="champ-input" placeholder="••••••••" required
+            autocomplete="current-password" />
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <button type="submit" id="btn-se-connecter" class="btn btn-primaire" style="width: 100%; padding: 0.75rem;">
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span>Se connecter</span>
+          </button>
+        </div>
+
+        <div
+          style="margin-top: 1.5rem; padding-top: 1rem; border-top: var(--bordure-discrete); text-align: center; font-size: 0.8125rem; color: var(--texte-secondaire);">
+          <strong>Comptes de démonstration :</strong><br />
+          <span>Admin : admin@supermarche.local (Admin1234!)</span><br />
+          <span>Caissier : caissier@supermarche.local (Caisse1234!)</span>
+        </div>
+      </form>
+
+      <!-- Formulaire d'Inscription -->
+      <form id="formulaire-inscription" onsubmit="return false;" style="display: none;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+          <div class="champ-groupe">
+            <label for="input-inscr-prenom" class="champ-label">Prénom</label>
+            <input type="text" id="input-inscr-prenom" class="champ-input" placeholder="ex: Jean" required />
+          </div>
+          <div class="champ-groupe">
+            <label for="input-inscr-nom" class="champ-label">Nom</label>
+            <input type="text" id="input-inscr-nom" class="champ-input" placeholder="ex: Dupont" required />
+          </div>
+        </div>
+
+        <div class="champ-groupe">
+          <label for="input-inscr-email" class="champ-label">Adresse email professionnelle</label>
+          <input type="email" id="input-inscr-email" class="champ-input" placeholder="ex: jean.dupont@supermarche.local"
+            required autocomplete="username" />
+        </div>
+
+        <div class="champ-groupe">
+          <label for="input-inscr-telephone" class="champ-label">Numéro de téléphone</label>
+          <input type="tel" id="input-inscr-telephone" class="champ-input" placeholder="ex: +221 77 123 45 67" />
+        </div>
+
+        <div class="champ-groupe">
+          <label for="input-inscr-role" class="champ-label">Rôle d'accès</label>
+          <select id="input-inscr-role" class="champ-select">
+            <option value="Administrateur" selected>Administrateur (Accès complet)</option>
+            <option value="Gérant">Gérant</option>
+            <option value="Caissier">Caissier</option>
+            <option value="Gestionnaire de stock">Gestionnaire de stock</option>
+          </select>
+        </div>
+
+        <div class="champ-groupe">
+          <label for="input-inscr-motdepasse" class="champ-label">Mot de passe</label>
+          <input type="password" id="input-inscr-motdepasse" class="champ-input"
+            placeholder="•••••••• (min 6 caractères)" required autocomplete="new-password" />
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <button type="submit" id="btn-creer-compte" class="btn btn-primaire" style="width: 100%; padding: 0.75rem;">
+            <i class="bi bi-person-check-fill"></i>
+            <span>Créer mon compte et accéder</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Application Principale (Affichée après connexion) -->
+  <div id="app-principale" class="app-conteneur" style="display: none;">
+
+    <!-- Barre latérale de navigation -->
+    <aside class="barre-laterale">
+      <div class="barre-laterale-entete">
+        <i class="bi bi-cart4" style="font-size: 1.5rem; color: var(--couleur-principale);"></i>
+        <div class="app-titre">SUPERMARCHÉ</div>
+      </div>
+
+      <nav class="barre-laterale-menu" id="navigation-principale">
+        <a class="nav-lien actif" data-vue="dashboard" id="nav-dashboard">
+          <i class="bi bi-grid-1x2-fill nav-icone"></i>
+          <span class="nav-texte">Tableau de bord</span>
+        </a>
+        <a class="nav-lien" data-vue="caisse" id="nav-caisse">
+          <i class="bi bi-calculator nav-icone"></i>
+          <span class="nav-texte">Caisse & Vente</span>
+        </a>
+        <a class="nav-lien" data-vue="produits" id="nav-produits">
+          <i class="bi bi-box-seam nav-icone"></i>
+          <span class="nav-texte">Produits & Rayons</span>
+        </a>
+        <a class="nav-lien" data-vue="stocks" id="nav-stocks">
+          <i class="bi bi-arrow-left-right nav-icone"></i>
+          <span class="nav-texte">Gestion des stocks</span>
+        </a>
+        <a class="nav-lien" data-vue="ventes" id="nav-ventes">
+          <i class="bi bi-receipt-cutoff nav-icone"></i>
+          <span class="nav-texte">Historique ventes</span>
+        </a>
+        <a class="nav-lien" data-vue="clients" id="nav-clients">
+          <i class="bi bi-people-fill nav-icone"></i>
+          <span class="nav-texte">Clients</span>
+        </a>
+        <a class="nav-lien" data-vue="fournisseurs" id="nav-fournisseurs">
+          <i class="bi bi-truck nav-icone"></i>
+          <span class="nav-texte">Fournisseurs</span>
+        </a>
+        <a class="nav-lien" data-vue="depenses" id="nav-depenses">
+          <i class="bi bi-wallet2 nav-icone"></i>
+          <span class="nav-texte">Dépenses</span>
+        </a>
+        <a class="nav-lien" data-vue="employes" id="nav-employes">
+          <i class="bi bi-person-badge-fill nav-icone"></i>
+          <span class="nav-texte">Employés</span>
+        </a>
+        <a class="nav-lien" data-vue="rapports" id="nav-rapports">
+          <i class="bi bi-graph-up-arrow nav-icone"></i>
+          <span class="nav-texte">Rapports & Bilan</span>
+        </a>
+      </nav>
+
+      <div class="barre-laterale-pied">
+        <button id="btn-deconnexion" class="btn btn-annuler btn-sm" style="width: 100%;">
+          <i class="bi bi-power"></i>
+          <span class="nav-texte">Déconnexion</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Zone principale -->
+    <div class="conteneur-principal">
+      <header class="barre-superieure">
+        <h2 id="titre-vue-active" class="titre-page-actuelle">Tableau de bord</h2>
+
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <button id="btn-trigger-spotlight" class="btn btn-annuler btn-sm"
+            style="display: flex; align-items: center; gap: 0.5rem;" title="Recherche globale">
+            <i class="bi bi-search"></i>
+            <span style="font-size: 0.75rem; background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 4px;">Ctrl +
+              K</span>
+          </button>
+
+          <div class="utilisateur-profil" id="zone-profil-utilisateur" style="cursor: pointer;"
+            title="Voir mon profil et modifier mot de passe">
+            <div class="profil-badge">
+              <span id="utilisateur-nom" class="profil-nom">Utilisateur</span>
+              <span id="utilisateur-role" class="profil-role">Rôle</span>
+            </div>
+            <div
+              style="width: 36px; height: 36px; border-radius: 50%; background-color: var(--couleur-principale); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;"
+              id="utilisateur-avatar">
+              U
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Vue active dynamique -->
+      <main id="zone-vue-dynamique" class="vue-conteneur">
+        <!-- Rendu injecté dynamiquement par JavaScript -->
+      </main>
+    </div>
+  </div>
+
+  <!-- Zone modale générique -->
+  <div id="modale-globale" class="modale-overlay" role="dialog" aria-modal="true" style="display: none;">
+    <div class="modale-boite" id="modale-contenu"></div>
+  </div>
+
+  <!-- Zone d'impression de ticket masquée à l'écran -->
+  <div id="zone-ticket-imprimable" style="display: none;"></div>
+
+  <!-- Scripts modulaires du frontend -->
+  <script src="js/config.js"></script>
+  <script src="js/utils/modal.js"></script>
+  <script src="js/utils/export.js"></script>
+  <script src="js/utils/ticket.js"></script>
+  <script src="js/utils/invoice.js"></script>
+  <script src="js/utils/purchaseOrder.js"></script>
+  <script src="js/utils/scanner.js"></script>
+  <script src="js/utils/spotlight.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/views/dashboard.js"></script>
+  <script src="js/views/caisse.js"></script>
+  <script src="js/views/produits.js"></script>
+  <script src="js/views/stocks.js"></script>
+  <script src="js/views/ventes.js"></script>
+  <script src="js/views/gestion.js"></script>
+  <script src="js/views/rapports.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>

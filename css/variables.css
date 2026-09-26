@@ -1,0 +1,48 @@
+/**
+ * Charte Graphique & Design Tokens du Supermarché.
+ * Strictement conforme aux spécifications du cahier des charges.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700&display=swap');
+
+:root {
+  /* 1. Couleurs fondamentales de la charte */
+  --fond-general: #F5F7FA;
+  --barre-laterale: #0F172A;
+  --barre-laterale-active: #1E293B;
+  --couleur-principale: #2563EB;
+  --couleur-principale-survol: #1D4ED8;
+  --texte-principal: #111827;
+  --texte-secondaire: #6B7280;
+  --cartes-fond: #FFFFFF;
+  --couleur-succes: #16A34A;
+  --couleur-succes-survol: #15803D;
+  --couleur-alerte: #F59E0B;
+  --couleur-alerte-survol: #D97706;
+  --couleur-erreur: #DC2626;
+  --couleur-erreur-survol: #B91C1C;
+  --couleur-neutre: #6B7280;
+  --couleur-neutre-survol: #4B5563;
+
+  /* 2. Typographies */
+  --police-titres: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --police-texte: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* 3. Bordures et rayons */
+  --bordure-discrete: 1px solid #E2E8F0;
+  --bordure-focus: 2px solid #2563EB;
+  --rayon-sm: 6px;
+  --rayon-md: 10px;
+  --rayon-lg: 14px;
+  --rayon-plein: 9999px;
+
+  /* 4. Ombres douces et élévations */
+  --ombre-subtile: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --ombre-carte: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --ombre-survol: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  --ombre-modale: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* 5. Transitions */
+  --transition-rapide: all 0.15s ease-in-out;
+  --transition-normale: all 0.25s ease-in-out;
+}
