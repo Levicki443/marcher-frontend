@@ -6,15 +6,21 @@ const VUE_GESTION = {
   // 1. CLIENTS
   async rendreClients(conteneur) {
     conteneur.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
         <div>
           <h2 style="font-size: 1.35rem; font-weight: 700;">Portefeuille Clients</h2>
           <p style="color: var(--texte-secondaire); font-size: 0.875rem;">Fidélisation et historique des achats</p>
         </div>
-        <button class="btn btn-primaire" onclick="VUE_GESTION.ouvrirModaleClient()">
-          <i class="bi bi-person-plus-fill"></i>
-          <span>Ajouter un client</span>
-        </button>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button id="btn-vider-clients" class="btn btn-supprimer btn-sm" style="display: none;" onclick="VUE_GESTION.viderTousLesClients()">
+            <i class="bi bi-trash3-fill"></i>
+            <span>Vider tous les clients</span>
+          </button>
+          <button class="btn btn-primaire" onclick="VUE_GESTION.ouvrirModaleClient()">
+            <i class="bi bi-person-plus-fill"></i>
+            <span>Ajouter un client</span>
+          </button>
+        </div>
       </div>
       <div class="table-conteneur">
         <table class="table-gestion">
@@ -27,18 +33,47 @@ const VUE_GESTION = {
     const corps = document.getElementById('tableau-clients-corps');
     if (!corps) return;
     const clients = res.donnees || [];
-    corps.innerHTML = clients.length === 0 ? `<tr><td colspan="6" style="text-align: center; padding: 2rem;">Aucun client enregistré.</td></tr>` : clients.map((c) => `
+    
+    const btnVider = document.getElementById('btn-vider-clients');
+    if (btnVider && clients.length > 0) {
+      btnVider.style.display = 'inline-flex';
+    }
+
+    corps.innerHTML = clients.length === 0 ? `<tr><td colspan="6" style="text-align: center; padding: 2.5rem; color: var(--texte-secondaire);"><i class="bi bi-people" style="font-size: 2rem; display: block; margin-bottom: 0.5rem; opacity: 0.5;"></i>Aucun client enregistré. La liste est neuve et vierge.</td></tr>` : clients.map((c) => `
       <tr>
-        <td><strong>${c.prenom} ${c.nom}</strong></td>
+        <td><strong>${c.prenom || ''} ${c.nom || ''}</strong></td>
         <td>${c.telephone || '—'}</td>
         <td>${c.email || '—'}</td>
         <td>${c.adresse || '—'}</td>
-        <td style="text-align: right; font-weight: 600; color: var(--couleur-succes);">${formaterMontant(c.totalAchats)} (${c.nombreCommandes} vte)</td>
-        <td style="text-align: right;">
-          <button class="btn btn-modifier btn-sm" onclick="VUE_GESTION.ouvrirModaleClient('${c._id}')"><i class="bi bi-pencil-square"></i></button>
+        <td style="text-align: right; font-weight: 600; color: var(--couleur-succes);">${formaterMontant(c.totalAchats)} (${c.nombreCommandes || 0} vte)</td>
+        <td style="text-align: right; white-space: nowrap;">
+          <button class="btn btn-modifier btn-sm" onclick="VUE_GESTION.ouvrirModaleClient('${c._id}')" title="Modifier"><i class="bi bi-pencil-square"></i></button>
+          <button class="btn btn-supprimer btn-sm" onclick="VUE_GESTION.supprimerClient('${c._id}', '${((c.prenom || '') + ' ' + (c.nom || '')).trim()}')" title="Supprimer"><i class="bi bi-trash"></i></button>
         </td>
       </tr>
     `).join('');
+  },
+
+  async supprimerClient(id, nom) {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer définitivement le client "${nom}" ?`)) return;
+    try {
+      await API.delete(`/clients/${id}`);
+      API.notifier(`Client "${nom}" supprimé avec succès.`, 'succes');
+      APP.naviguerVers('clients');
+    } catch (err) {
+      console.error(err);
+    }
+  },
+
+  async viderTousLesClients() {
+    if (!confirm('ATTENTION : Voulez-vous vraiment supprimer TOUS les clients du système ? Le registre sera complètement neuf et vide.')) return;
+    try {
+      await API.delete('/clients/tous/vider');
+      API.notifier('Tous les clients ont été supprimés avec succès.', 'succes');
+      APP.naviguerVers('clients');
+    } catch (err) {
+      console.error(err);
+    }
   },
 
   ouvrirModaleClient(id = null) {
@@ -94,8 +129,8 @@ const VUE_GESTION = {
       </div>
       <div class="table-conteneur">
         <table class="table-gestion">
-          <thead><tr><th>Entreprise</th><th>Responsable</th><th>Téléphone</th><th>Email</th><th>Adresse</th><th>Produits fournis</th></tr></thead>
-          <tbody id="tableau-fournisseurs-corps"><tr><td colspan="6" style="text-align: center; padding: 2rem;">Chargement...</td></tr></tbody>
+          <thead><tr><th>Entreprise</th><th>Responsable</th><th>Téléphone</th><th>Email</th><th>Adresse</th><th>Produits fournis</th><th style="text-align: right;">Actions</th></tr></thead>
+          <tbody id="tableau-fournisseurs-corps"><tr><td colspan="7" style="text-align: center; padding: 2rem;">Chargement...</td></tr></tbody>
         </table>
       </div>
     `;
@@ -103,7 +138,7 @@ const VUE_GESTION = {
     const corps = document.getElementById('tableau-fournisseurs-corps');
     if (!corps) return;
     const fournisseurs = res.donnees || [];
-    corps.innerHTML = fournisseurs.length === 0 ? `<tr><td colspan="6" style="text-align: center; padding: 2rem;">Aucun fournisseur enregistré.</td></tr>` : fournisseurs.map((f) => `
+    corps.innerHTML = fournisseurs.length === 0 ? `<tr><td colspan="7" style="text-align: center; padding: 2rem;">Aucun fournisseur enregistré.</td></tr>` : fournisseurs.map((f) => `
       <tr>
         <td><strong>${f.nomEntreprise}</strong></td>
         <td>${f.nomResponsable || '—'}</td>
@@ -111,8 +146,22 @@ const VUE_GESTION = {
         <td>${f.email || '—'}</td>
         <td>${f.adresse || '—'}</td>
         <td><span style="font-size: 0.8125rem; color: var(--texte-secondaire);">${(f.produitsFournis || []).join(', ') || 'Divers'}</span></td>
+        <td style="text-align: right; white-space: nowrap;">
+          <button class="btn btn-supprimer btn-sm" onclick="VUE_GESTION.supprimerFournisseur('${f._id}', '${f.nomEntreprise}')" title="Supprimer"><i class="bi bi-trash"></i></button>
+        </td>
       </tr>
     `).join('');
+  },
+
+  async supprimerFournisseur(id, nom) {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer le fournisseur "${nom}" ?`)) return;
+    try {
+      await API.delete(`/fournisseurs/${id}`);
+      API.notifier(`Fournisseur "${nom}" supprimé.`, 'succes');
+      APP.naviguerVers('fournisseurs');
+    } catch (err) {
+      console.error(err);
+    }
   },
 
   async ouvrirModaleBonCommande() {
@@ -174,8 +223,8 @@ const VUE_GESTION = {
       </div>
       <div class="table-conteneur">
         <table class="table-gestion">
-          <thead><tr><th>Date</th><th>Catégorie</th><th>Libellé / Titre</th><th>Bénéficiaire / Réf</th><th>Enregistré Par</th><th style="text-align: right;">Montant</th></tr></thead>
-          <tbody id="tableau-depenses-corps"><tr><td colspan="6" style="text-align: center; padding: 2rem;">Chargement...</td></tr></tbody>
+          <thead><tr><th>Date</th><th>Catégorie</th><th>Libellé / Titre</th><th>Bénéficiaire / Réf</th><th>Enregistré Par</th><th style="text-align: right;">Montant</th><th style="text-align: right;">Actions</th></tr></thead>
+          <tbody id="tableau-depenses-corps"><tr><td colspan="7" style="text-align: center; padding: 2rem;">Chargement...</td></tr></tbody>
         </table>
       </div>
     `;
@@ -183,7 +232,7 @@ const VUE_GESTION = {
     const corps = document.getElementById('tableau-depenses-corps');
     if (!corps) return;
     const depenses = res.donnees || [];
-    corps.innerHTML = depenses.length === 0 ? `<tr><td colspan="6" style="text-align: center; padding: 2rem;">Aucune dépense enregistrée.</td></tr>` : depenses.map((d) => `
+    corps.innerHTML = depenses.length === 0 ? `<tr><td colspan="7" style="text-align: center; padding: 2rem;">Aucune dépense enregistrée.</td></tr>` : depenses.map((d) => `
       <tr>
         <td style="font-size: 0.8125rem;">${formaterDate(d.dateDepense)}</td>
         <td><span class="badge badge-info">${d.categorie}</span></td>
@@ -191,8 +240,22 @@ const VUE_GESTION = {
         <td>${d.beneficiaire || d.referenceFacture || '—'}</td>
         <td style="font-size: 0.8125rem;">${d.enregistrePar?.prenom || ''} ${d.enregistrePar?.nom || ''}</td>
         <td style="text-align: right; font-weight: 700; color: var(--couleur-erreur);">${formaterMontant(d.montant)}</td>
+        <td style="text-align: right; white-space: nowrap;">
+          <button class="btn btn-supprimer btn-sm" onclick="VUE_GESTION.supprimerDepense('${d._id}', '${d.titre}')" title="Supprimer"><i class="bi bi-trash"></i></button>
+        </td>
       </tr>
     `).join('');
+  },
+
+  async supprimerDepense(id, titre) {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer la dépense "${titre}" ?`)) return;
+    try {
+      await API.delete(`/depenses/${id}`);
+      API.notifier(`Dépense supprimée.`, 'succes');
+      APP.naviguerVers('depenses');
+    } catch (err) {
+      console.error(err);
+    }
   },
 
   ouvrirModaleDepense() {
@@ -241,8 +304,8 @@ const VUE_GESTION = {
       </div>
       <div class="table-conteneur">
         <table class="table-gestion">
-          <thead><tr><th>Nom & Prénom</th><th>Email</th><th>Téléphone</th><th>Rôle</th><th>Statut</th><th>Dernière connexion</th></tr></thead>
-          <tbody id="tableau-employes-corps"><tr><td colspan="6" style="text-align: center; padding: 2rem;">Chargement...</td></tr></tbody>
+          <thead><tr><th>Nom & Prénom</th><th>Email</th><th>Téléphone</th><th>Rôle</th><th>Statut</th><th>Dernière connexion</th><th style="text-align: right;">Actions</th></tr></thead>
+          <tbody id="tableau-employes-corps"><tr><td colspan="7" style="text-align: center; padding: 2rem;">Chargement...</td></tr></tbody>
         </table>
       </div>
     `;
@@ -250,7 +313,11 @@ const VUE_GESTION = {
     const corps = document.getElementById('tableau-employes-corps');
     if (!corps) return;
     const employes = res.donnees || [];
-    corps.innerHTML = employes.map((e) => `
+    const utilisateurActuel = AUTH.obtenirUtilisateur();
+
+    corps.innerHTML = employes.map((e) => {
+      const estMemeCompte = utilisateurActuel && (utilisateurActuel.id === e._id || utilisateurActuel._id === e._id);
+      return `
       <tr>
         <td><strong>${e.prenom} ${e.nom}</strong></td>
         <td>${e.email}</td>
@@ -258,8 +325,23 @@ const VUE_GESTION = {
         <td><span class="badge badge-info">${e.role}</span></td>
         <td><span class="badge ${e.actif ? 'badge-normal' : 'badge-rupture'}">${e.actif ? 'Actif' : 'Désactivé'}</span></td>
         <td style="font-size: 0.8125rem;">${formaterDate(e.derniereConnexion, true)}</td>
+        <td style="text-align: right; white-space: nowrap;">
+          ${!estMemeCompte ? `<button class="btn btn-supprimer btn-sm" onclick="VUE_GESTION.supprimerEmploye('${e._id}', '${e.prenom} ${e.nom}')" title="Supprimer"><i class="bi bi-trash"></i></button>` : `<span style="font-size: 0.75rem; color: var(--texte-secondaire);">Vous</span>`}
+        </td>
       </tr>
-    `).join('');
+    `;
+    }).join('');
+  },
+
+  async supprimerEmploye(id, nom) {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer définitivement le compte de "${nom}" ?`)) return;
+    try {
+      await API.delete(`/utilisateurs/${id}`);
+      API.notifier(`Compte de "${nom}" supprimé avec succès.`, 'succes');
+      APP.naviguerVers('employes');
+    } catch (err) {
+      console.error(err);
+    }
   },
 
   ouvrirModaleEmploye() {
